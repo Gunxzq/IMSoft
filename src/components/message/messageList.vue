@@ -3,7 +3,6 @@
     <VirtualList :dataList="messages" :getItemHeight="getItemHeight" :buffer="200" @scroll="handleScroll">
       <!-- 自定义渲染插槽 -->
       <template #default="{ item, index }">
-        <!-- <div class="message-item" :class="{ self: item.isSelf }"> -->
         <!-- 消息内容（根据类型动态渲染） -->
         <component :is="getMessageComponent(item.type)" :message="item" />
         <!-- </div> -->

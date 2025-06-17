@@ -1,13 +1,7 @@
 <template>
-  <!-- <div style="height: 200px; width: 200px"> -->
-  <video width="400" height="400" controls>
-    <source src="./assets/1.mp4" type="video/mp4" />
-  </video>
-  <audio src="../public/1.mp4"></audio>
-  <!-- </div> -->
-  <!-- <messageList :messages="messages"></messageList> -->
-
-  <img src="../public/1.PNG" alt="" />
+  <div style="height: 200px; width: 200px">
+    <messageList :messages="messages"></messageList>
+  </div>
 </template>
 
 <script lang="ts" setup>

@@ -24,28 +24,14 @@
 
 <script setup lang="ts">
 import type { MessageDetail } from './type';
-import { computed } from 'vue';
 
 // Props 定义
 const props = defineProps<{
   message: MessageDetail;
 }>();
 
-// let message: MessageDetail = {
-//   content: 'hello world',
-//   isSelf: true,
-//   id: '1',
-//   time: '2023-01-01 00:00:00',
-//   type: 'text',
-//   userId: '1',
-// };
-
-// // 处理表情和@提及
-// const renderedContent = computed(() => {
-//   const rawContent = props.message.content;
-//   const withEmoticons = parseEmoticons(rawContent); // 表情转图片（如 😊 → <img src="smile.png">）
-//   return highlightAtMentions(withEmoticons); // @提及高亮（如 @张三 → <span class="at-mention">@张三</span>）
-// });
+// 导出方法
+defineExpose({});
 </script>
 
 <style scoped>
