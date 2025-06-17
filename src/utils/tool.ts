@@ -96,3 +96,8 @@ export function getFirstLetter(name: string) {
   // 3. 其他语言（非拉丁字母）：归为 # 组（如：日文"たろう"、阿拉伯文"محمد"）
   return '#';
 }
+
+// 将date转为时间戳
+export function dateToTimestamp(date: Date): number {
+  return date.getTime();
+}
