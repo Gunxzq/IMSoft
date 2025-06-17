@@ -29,3 +29,7 @@ store 可以通过导入 **WebSocketService** 实例，来监听或关闭需要�
 提供监听事件和关闭事件的封装，并管理这些事件。
 
 导出 WebSocketService 类的实例
+
+# IMSoft
+
+即时通讯系统
