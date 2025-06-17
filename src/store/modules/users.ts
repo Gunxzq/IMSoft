@@ -6,9 +6,6 @@ import type { userStatusInfo } from './types/userInfo';
 import { useUserInfoStore } from './userInfo';
 
 export const useUsersStore = defineStore('users', () => {
-  // const instance = getCurrentInstance();
-  // const { userId } = instance?.appContext.config.globalProperties.$globalStore;
-
   const { userId } = storeToRefs(useUserInfoStore());
 
   //聊天对象状态

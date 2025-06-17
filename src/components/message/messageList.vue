@@ -15,8 +15,6 @@
 <script setup>
 import { ref } from 'vue';
 import VirtualList from '../virtualList/VirtualList.vue';
-// import { MessageType } from '@/store/modules/type';
-// import { MessageType } from '../store/modules/type/message.ts';
 import { MessageType } from '../../store/modules/types/message';
 import TextMessage from './TextMessage.vue';
 import ImageMessage from './ImageMessage.vue';

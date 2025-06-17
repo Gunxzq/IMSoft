@@ -11,4 +11,4 @@ npm install
 npm run dev
 ```
 
-查看 README3.md 的文件，来了解文件的目录结构
+查看 README3.md 的文件，来了解文件的目录结构和相应部分的具体介绍
