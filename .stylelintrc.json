@@ -1,0 +1,6 @@
+{
+  "extends": ["stylelint-config-standard"],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.stylelint": true
+  }
+}
