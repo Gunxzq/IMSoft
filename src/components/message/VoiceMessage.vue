@@ -78,6 +78,9 @@ const startRecord = async () => {
       recordingDuration.value++;
       updateRecordingWaves();
     }, 1000);
+
+    // 通知父组件
+    emit('startRecord');
   } catch (error) {}
 };
 
