@@ -208,24 +208,25 @@ const stopRecord = () => {
       mediaRecorder.value?.removeEventListener('stop', onStop);
       // 确保生成 Blob URL（原 onstop 逻辑）
       if (audioChunks.value.length > 0) {
-        audioBlob.value = new Blob(audioChunks.value, { type: mediaRecorder.value.mimeType });
+        audioBlob.value = new Blob(audioChunks.value, { type: mediaRecorder.value?.mimeType });
         recordedAudioUrl.value = URL.createObjectURL(audioBlob.value);
       }
       resolve(true);
     };
     // 监听错误事件（失败时拒绝 Promise）
     const onError = (event: Event) => {
+      console.error('录音停止失败:', event);
       mediaRecorder.value?.removeEventListener('error', onError);
       reject(new Error('录音停止失败'));
     };
 
     // 注册事件监听
-    mediaRecorder.value.addEventListener('stop', onStop);
-    mediaRecorder.value.addEventListener('error', onError);
+    mediaRecorder.value?.addEventListener('stop', onStop);
+    mediaRecorder.value?.addEventListener('error', onError);
 
     clearInterval(recordingTimer.value as number);
-    mediaRecorder.value.stop();
-    mediaRecorder.value.stream.getTracks().forEach(track => track.stop());
+    mediaRecorder.value?.stop();
+    mediaRecorder.value?.stream.getTracks().forEach(track => track.stop());
     recognition?.stop();
   });
 };

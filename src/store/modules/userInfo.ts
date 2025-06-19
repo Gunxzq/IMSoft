@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import type { UserStatus } from './types/userInfo';
 
 export const useUserInfoStore = defineStore('userinfo', () => {
+  let token = ref('');
   let userId = ref('1');
   // 用户的连接状态
   const userStatus = ref<UserStatus>({});
@@ -17,6 +18,7 @@ export const useUserInfoStore = defineStore('userinfo', () => {
 
   return {
     userStatus,
+    token,
     userId,
     updateUserStatus,
   };

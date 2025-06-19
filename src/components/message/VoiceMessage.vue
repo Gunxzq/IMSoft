@@ -1,161 +1,214 @@
 <template>
-  <!-- 录音按钮 -->
-  <button @click="startRecord">
-    <span>{{ recordText }}</span>
-  </button>
-
-  <!-- 录音控制面板（录音时显示） -->
-  <div v-show="recordingStatus === 'recording'">
-    <div>
-      <div>
-        <!-- 录音时长 -->
-        <span>{{ formatTime(recordingDuration) }}</span>
-        <!-- 录音波形 -->
-        <span v-for="(wave, index) in recordingWaves" :key="index" class="wave-bar" :style="{ height: wave + 'px' }"></span>
+  <div class="message-bubble">
+    <div class="voice-container" @click="togglePlay">
+      <!-- 波形图（动态/静态） -->
+      <div class="waveform" :class="{ playing: VoliceDetail.playStatus === 'playing' }">
+        <!-- 若有真实波形数据，渲染SVG；否则用CSS模拟 -->
+        <!-- <template v-if="VoliceDetail.waveformData">
+          <svg viewBox="0 0 100 40">
+            <path :d="VoliceDetail.waveformData" fill="currentColor" />
+          </svg>
+        </template> -->
+        <!-- <template v-else> -->
+        <!-- 模拟波形（5个竖条，高度随机） -->
+        <!-- <div v-for="i in 5" :key="i" class="wave-bar" :style="{ height: `${20 + Math.random() * 30}%` }"></div> -->
+        <!-- </template> -->
       </div>
+
+      <!-- 时长显示 -->
+      <span class="duration">{{ formattedDuration }}</span>
+
+      <!-- 播放状态图标（可选） -->
+      <span v-if="VoliceDetail.playStatus === 'playing'" class="playing-icon">
+        <svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" /></svg>
+      </span>
     </div>
-    <div>
-      <button @click="cancelRecording">取消</button>
-      <button @click="finishRecording">完成</button>
-    </div>
+    <!-- </div> -->
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-// 录音相关状态
-const mediaRecorder = ref<MediaRecorder | null>(null); // 解析器
-const audioChunks = ref<Blob[]>([]); // 二进制数据
-const recordingStatus = ref<string>('inactive'); //录音状态
-const recordingDuration = ref<number>(0); // 录音时长
-const recordingTimer = ref<any | null>(null); // 定时器
-const recordingWaves = ref(Array(5).fill(2)); // 录音波形动画
-const recordedAudioUrl = ref(''); // 录制完成的音频URL
-const recordText = ref('按住说话'); // 录音按钮文字
+import { computed, ref, watch } from 'vue';
+import type { MessageDetail, VoiceMessage } from './type';
+import { parseMessageContent } from '../../utils/tool';
+// import
 
-// 组件事件
-const emit = defineEmits(['startRecord', 'recordComplete']);
+// Props 定义
+const props = defineProps<{
+  message: MessageDetail;
+}>();
 
-// 录音初始化
-const init = async () => {
-  try {
-    // 请求麦克风权限
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-    // 初始化MediaRecorder
-    mediaRecorder.value = new MediaRecorder(stream);
-    audioChunks.value = [];
-
-    // 数据可用事件
-    mediaRecorder.value.ondataavailable = event => {
-      if (event.data.size > 0) {
-        audioChunks.value.push(event.data);
-      }
-    };
-
-    // 录音停止事件
-    mediaRecorder.value.onstop = () => {
-      // 生成音频Blob并创建URL
-      const audioBlob = new Blob(audioChunks.value, { type: 'audio/webm' });
-      recordedAudioUrl.value = URL.createObjectURL(audioBlob);
-    };
-  } catch (error) {
-    console.error('录音失败:', error);
-  }
-};
-
-const startRecord = async () => {
-  try {
-    await init();
-
-    // 开始录音
-    mediaRecorder.value?.start();
-    recordingStatus.value = 'recording';
-    recordingDuration.value = 0;
-
-    // 启动计时器更新时长
-    recordingTimer.value = setInterval(() => {
-      recordingDuration.value++;
-      updateRecordingWaves();
-    }, 1000);
-
-    // 通知父组件
-    emit('startRecord');
-  } catch (error) {}
-};
-
-// 取消录音
-const cancelRecording = () => {
-  if (mediaRecorder.value) {
-    mediaRecorder.value.stop();
-    mediaRecorder.value.stream.getTracks().forEach(track => track.stop());
-  }
-  clearInterval(recordingTimer.value as number);
-
-  URL.revokeObjectURL(recordedAudioUrl.value);
-  recordedAudioUrl.value = '';
-  resetRecordingState();
-};
-
-// 完成录音
-const finishRecording = async () => {
-  if (mediaRecorder.value && recordingStatus.value === 'recording') {
-    mediaRecorder.value.stop();
-    // 释放麦克风资源
-    mediaRecorder.value.stream.getTracks().forEach(track => track.stop());
-  }
-  clearInterval(recordingTimer.value as number);
-  recordingStatus.value = 'inactive';
-
-  // 如果没有录制内容，直接返回
-  if (!recordedAudioUrl.value) return;
-
-  try {
-    const content = `url=${recordedAudioUrl.value}$duration=${formatTime(recordingDuration.value)}`;
-
-    recordedAudioUrl.value = '';
-    resetRecordingState();
-
-    // 将数据传递给父组件
-    emit('recordComplete', content);
-  } catch (error) {
-    console.error('发送音频失败:', error);
-  } finally {
-  }
-};
-
-// 更新录音波形动画
-const updateRecordingWaves = () => {};
-
-// 重置录音状态
-const resetRecordingState = () => {
-  clearInterval(recordingTimer.value);
-  recordingWaves.value = Array(5).fill(2);
-  recordingDuration.value = 0;
-};
-
-// 格式化时间（秒转MM:SS）
-const formatTime = (seconds: number) => {
-  const mins = Math.floor(seconds / 60)
-    .toString()
-    .padStart(2, '0');
-  const secs = (seconds % 60).toString().padStart(2, '0');
-  return `${mins}:${secs}`;
-};
-
-// 清理资源
-const unmounted = () => {
-  if (mediaRecorder.value) {
-    mediaRecorder.value.stream.getTracks().forEach(track => track.stop());
-  }
-  // 清理定时器
-  clearInterval(recordingTimer.value);
-  // 清理 URL.createObjectURL(blob) 创建的URL
-  URL.revokeObjectURL(recordedAudioUrl.value);
-};
-
-// 暴露给父组件的方法
-defineExpose({
-  unmounted,
+let obj = parseMessageContent(props.message.content);
+let VoliceDetail = ref<VoiceMessage>({
+  ...props.message,
+  url: obj.url,
+  duration: obj.duration,
+  playStatus: 'idle',
 });
+
+const formattedDuration = computed(() => {
+  const min = Math.floor(VoliceDetail.value.duration / 60);
+  const sec = VoliceDetail.value.duration % 60;
+  return `${min}:${sec.toString().padStart(2, '0')}`;
+});
+
+// 播放状态管理（使用ref避免响应式丢失）
+const isPlaying = ref(VoliceDetail.value.playStatus === 'playing');
+
+// 监听外部状态变化（如父组件更新播放状态）
+watch(
+  () => VoliceDetail.value.playStatus,
+  newStatus => {
+    isPlaying.value = newStatus === 'playing';
+  },
+);
+
+// 切换播放/暂停
+const togglePlay = async () => {
+  if (isPlaying.value) {
+    // 暂停当前播放
+    await pauseAudio();
+  } else {
+    // 播放新语音（先暂停其他可能正在播放的语音）
+    await stopAllOtherVoices();
+    await playAudio();
+  }
+};
+
+// 播放音频
+const playAudio = () => {
+  return new Promise((resolve, reject) => {
+    const audio = new Audio(VoliceDetail.value.url);
+    audio
+      .play()
+      .then(() => {
+        isPlaying.value = true;
+        VoliceDetail.value.playStatus = 'playing'; // 更新状态（需确保props可写或通过Vuex/Pinia同步）
+        audio.onended = () => {
+          isPlaying.value = false;
+          VoliceDetail.value.playStatus = 'played';
+          resolve(0);
+        };
+      })
+      .catch(err => {
+        console.error('播放失败:', err);
+        // 显示错误状态（如红色图标）
+        reject(err);
+      });
+  });
+};
+
+// 暂停音频
+const pauseAudio = () => {
+  const audio = new Audio(VoliceDetail.value.url);
+  audio.pause();
+  isPlaying.value = false;
+  VoliceDetail.value.playStatus = 'idle';
+};
+
+// 停止其他语音（假设通过Pinia管理全局播放状态）
+const stopAllOtherVoices = () => {
+  // 示例：调用全局音频管理器暂停其他语音
+  // audioManager.pauseAllExcept(props.message.id);
+};
 </script>
+
+<style scoped lang="scss">
+.message-bubble {
+  display: flex;
+  max-width: 70%;
+  margin: 8px 0;
+}
+.voice-message {
+  display: flex;
+  margin: 12px 0;
+  max-width: 70%; // 限制消息宽度
+
+  // 单聊/群聊布局
+  &.self {
+    flex-direction: row-reverse;
+    margin-left: auto;
+  }
+  &.group {
+    margin-left: 8px;
+  }
+
+  // 头像（群聊时显示）
+  .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin: 0 12px;
+  }
+
+  // 消息气泡
+  .message-bubble {
+    background: #fff;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .self & {
+      background: #e1f5fe; // 自己消息的背景色
+    }
+  }
+
+  // 语音容器（点击区域）
+  .voice-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    min-width: 80px; // 防止过窄
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+
+  // 波形图容器
+  .waveform {
+    flex: 1;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666; // 未播放时颜色
+
+    &.playing {
+      color: #2196f3; // 播放中颜色
+    }
+
+    // 动态波形（若使用SVG）
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    // 模拟波形（备用方案）
+    .wave-bar {
+      width: 4px;
+      background: currentColor;
+      border-radius: 2px;
+      transition: height 0.2s ease;
+    }
+  }
+
+  // 时长显示
+  .duration {
+    font-size: 12px;
+    color: #999;
+    white-space: nowrap;
+  }
+
+  // 播放状态图标（如扬声器）
+  .playing-icon {
+    width: 20px;
+    height: 20px;
+    color: #2196f3;
+  }
+}
+</style>
