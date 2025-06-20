@@ -4,6 +4,14 @@
     "./src/**/*.ts",
     "./src/types.d.ts"
   ],
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    }
+  },
   "references": [
     {
       "path": "./tsconfig.app.json"

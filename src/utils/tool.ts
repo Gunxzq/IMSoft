@@ -101,3 +101,7 @@ export function getFirstLetter(name: string) {
 export function dateToTimestamp(date: Date): number {
   return date.getTime();
 }
+
+export function generateMessageId(): string {
+  return `${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+}

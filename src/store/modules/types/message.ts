@@ -13,8 +13,9 @@ export type MessageType = (typeof MessageType)[keyof typeof MessageType];
 
 export interface Message {
   id: string;
-  sender: string;
-  receiver: string;
+  serverId?: string;
+  sender?: string;
+  receiver?: string;
   type: MessageType;
   content: string;
   timestamp: number;

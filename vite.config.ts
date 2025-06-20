@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { build, defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import path from 'path';
 import vuetify from 'vite-plugin-vuetify';
@@ -18,6 +18,10 @@ export default defineConfig((command, mode) => {
     ],
     server: {
       port: 5173,
+    },
+    build: {
+      outDir: 'dist',
+      SourceMap: true,
     },
   };
 });
