@@ -13,7 +13,7 @@
           </div>
         </div>
         <div>
-          <v-btn @click="cancelRecording" icon=" mdi-close"></v-btn>
+          <v-btn @click="cancelRecording" icon="mdi-close"></v-btn>
           <v-btn @click="finishRecording">完成</v-btn>
           <v-btn @click="downloadRecording">录音</v-btn>
           <v-btn @click="convertToText" icon>文</v-btn>

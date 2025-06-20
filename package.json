@@ -9,13 +9,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@mdi/font": "^7.4.47",
     "@types/lodash-es": "^4.17.12",
+    "axios": "^1.10.0",
     "lodash-es": "^4.17.21",
     "pinia": "^3.0.2",
     "pinyin-pro": "^3.26.0",
     "socket.io-client": "^4.8.1",
     "vue": "^3.5.13",
-    "vue-socket.io": "^3.0.10"
+    "vue-router": "^4.5.1",
+    "vue-socket.io": "^3.0.10",
+    "vuetify": "^3.8.10"
   },
   "devDependencies": {
     "@types/node": "^22.15.29",
@@ -25,6 +29,7 @@
     "sass-embedded": "^1.89.1",
     "typescript": "~5.8.3",
     "vite": "^6.3.5",
+    "vite-plugin-vuetify": "^2.1.1",
     "vue-tsc": "^2.2.8"
   }
 }
