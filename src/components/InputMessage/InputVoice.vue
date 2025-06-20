@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <v-btn @click="startRecord">{{ recordText }}</v-btn>
+    <v-btn @click="startRecord" style="width: 100%">{{ recordText }}</v-btn>
     <!-- 录音控制面板（录音时显示） -->
     <transition name="slide-up">
       <div v-show="recordingStatus === 'recording'">
@@ -307,6 +307,12 @@ const unmounted = () => {
 defineExpose({
   unmounted,
 });
+</script>
+
+<script lang="ts">
+export default {
+  name: 'InputVoice',
+};
 </script>
 
 <style lang="scss" scoped>
