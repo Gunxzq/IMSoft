@@ -3,9 +3,7 @@
     <v-row>
       <v-col cols="3" v-for="item in menuItems" :key="item.icon">
         <v-sheet elevation="2" class="card">
-          <v-icon size="40">{{ item.icon }}</v-icon>
-          <span style="display: block">{{ item.label }}</span>
-          <component :is="item.component" />
+          <component :is="item.component" :icon="item.icon" :label="item.label" />
         </v-sheet>
       </v-col>
     </v-row>
@@ -20,7 +18,7 @@ let menuItems = [
   {
     icon: 'mdi-image-outline',
     label: '照片',
-    component: 'Photo',
+    component: InputImage,
   },
   //   {
   //     icon: 'mdi-camera-outline',

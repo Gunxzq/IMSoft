@@ -7,10 +7,7 @@
         <v-icon v-else @click="state.VoiceOrText = 'text'" size="40">mdi-keyboard-outline</v-icon>
       </v-col>
       <v-col cols="8">
-        <input-text
-          v-if="state.VoiceOrText === 'text'"
-          @rows-change="(e:boolean) => (state.classChange = e)"
-          @input="inputChangeEvent"></input-text>
+        <input-text v-if="state.VoiceOrText === 'text'" @rows-change="(e:boolean) => (state.classChange = e)"></input-text>
 
         <input-voice v-else style="width: 100%"></input-voice>
       </v-col>
@@ -23,24 +20,29 @@
     </v-row>
 
     <transition name="slide-up">
-      <input-emoj v-show="moreState == 'emoj'"></input-emoj>
+      <input-emoj v-if="moreState == 'emoj'"></input-emoj>
     </transition>
 
     <transition name="slide-up">
-      <more-actions v-show="moreState == 'more'"></more-actions>
+      <more-actions v-if="moreState == 'more'"></more-actions>
     </transition>
+
+    <v-btn v-if="sendState" @click="sendMsg">发送</v-btn>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
-import moreActions from './components/InputMessage/moreActions.vue';
-import InputEmoj from './components/InputMessage/InputEmoj.vue';
-import InputVoice from './components/InputMessage/InputVoice.vue';
-import InputText from './components/InputMessage/InputText.vue';
-import { type Message, MessageType } from '@/store/modules/types/message';
-import { generateMessageId } from '@/utils/tool';
+import { ref, reactive, computed } from 'vue';
+import moreActions from './moreActions.vue';
+import InputEmoj from './InputEmoj.vue';
+import InputVoice from './InputVoice.vue';
+import InputText from './InputText.vue';
+import { useMessageStore } from '../../store/modules/message';
+import { MessageType } from '../../store/modules/types/message';
+import { useUserInfoStore } from '../../store/modules/userInfo';
 
+const userInfoStore = useUserInfoStore();
+const messageStore = useMessageStore();
 const state = reactive({
   classChange: false,
   VoiceOrText: 'text',
@@ -55,16 +57,13 @@ const toggleActions = (e: string) => {
   plusRotate.value = moreState.value ? 45 : 0;
 };
 
-const inputChangeEvent = (content: { content: string; type: MessageType }) => {
-  //   组建消息对象
-  let message: Message = {
-    id: generateMessageId(),
-    content: content.content,
-    type: content.type,
-    timestamp: Date.now(),
-  };
+// 发送按钮
+const sendState = computed(() => {
+  return !!messageStore.currentMessage;
+});
 
-  // 调用仓库中的发送消息
+const sendMsg = () => {
+  messageStore.sendMessage(userInfoStore.userId, messageStore.currentConversationId, messageStore.currentMessage, MessageType.TEXT);
 };
 </script>
 

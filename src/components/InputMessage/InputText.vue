@@ -13,27 +13,21 @@
 <script setup lang="ts">
 import * as lodash from 'lodash-es';
 import { nextTick, onMounted, ref, type Ref } from 'vue';
-import { MessageType } from '../../store/modules/types/message';
+import { useMessageStore } from '../../store/modules/message';
+const messageStore = useMessageStore();
 
 let textAreaRef = ref<null | Ref>(null);
-
 // 行高
 let lineHeight = ref(0);
 
 // 事件
-const emit = defineEmits(['rowsChange', 'input']);
+const emit = defineEmits(['rowsChange']);
 // 输入事件
 const onTextareaInput = lodash.debounce(async e => {
-  let content = e.target.value;
+  messageStore.currentMessage = e.target.value;
   // 是否换行
   let isNewLineState = await isNewLine();
-
   emit('rowsChange', isNewLineState);
-
-  emit('input', {
-    content,
-    type: MessageType.TEXT,
-  });
 }, 500);
 
 // 判断是否换行
