@@ -7,7 +7,7 @@ import { useUserInfoStore } from './userInfo';
 import { useUsersStore } from './users';
 import { useGroupStore } from './groups';
 
-export const useMessageStore = defineStore('contacts', () => {
+export const useContactsStore = defineStore('contacts', () => {
   // const instance = getCurrentInstance();
   const { userId } = storeToRefs(useUserInfoStore());
   const { usersBaseInfo, userStatus } = storeToRefs(useUsersStore());

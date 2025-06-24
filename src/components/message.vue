@@ -37,7 +37,7 @@
 // import { connect } from 'http2';
 // import WebSocketServiceIstance from './utils/websockets/websokcet';
 import { useMessageStore } from './store/modules/message';
-
+import { useUserInfoStore } from '../store/modules/userInfo';
 import { onMounted, ref } from 'vue';
 
 let message = ref('');
