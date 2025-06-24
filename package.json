@@ -12,6 +12,7 @@
     "@mdi/font": "^7.4.47",
     "@types/lodash-es": "^4.17.12",
     "axios": "^1.10.0",
+    "compressorjs": "^1.2.1",
     "lodash-es": "^4.17.21",
     "pinia": "^3.0.2",
     "pinyin-pro": "^3.26.0",
