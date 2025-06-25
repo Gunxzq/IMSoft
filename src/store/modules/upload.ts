@@ -15,22 +15,23 @@ export const useUploadStore = defineStore('upload', () => {
   const compressQuality = 0.8;
 
   function addFiles(rawFiles: File[], key: string) {
+    console.log('addFiles', rawFiles);
     //
     if (!fileList.has(key)) {
       fileList.set(key, []);
     }
     rawFiles.forEach(file => {
       const list = fileList.get(key) as UploadFile[];
-      const existing = list.find(f => f.originalFile.name === file.name && f.originalFile.size === file.size);
-      if (!existing) {
-        list.push({
-          id: generateMessageId(),
-          originalFile: file,
-          originalUrl: URL.createObjectURL(file),
-          originalSize: file.size,
-          status: 'pending',
-        });
-      }
+      // const existing = list.find(f => f.originalFile.name === file.name && f.originalFile.size === file.size);
+      // if (!existing) {
+      list.push({
+        id: generateMessageId(),
+        originalFile: file,
+        originalUrl: URL.createObjectURL(file),
+        originalSize: file.size,
+        status: 'pending',
+      });
+      // }
     });
   }
 
@@ -45,10 +46,11 @@ export const useUploadStore = defineStore('upload', () => {
       const width = imgBitmap.width;
       const height = imgBitmap.height;
       imgBitmap.close();
-
+      console.log('width', width, 'height', height);
       // 压缩图片
       const thumbnails = await Promise.all(
         thumbnailSizes.map(async size => {
+          console.log('size', size);
           return new Promise<Thumbnail>(resolve => {
             new Compressor(file.originalFile, {
               quality: compressQuality,
@@ -60,10 +62,28 @@ export const useUploadStore = defineStore('upload', () => {
                 const width = imgBitmap.width;
                 const height = imgBitmap.height;
                 imgBitmap.close();
+
+                // base64
+                const base64 = await new Promise<string>((resolve, reject) => {
+                  try {
+                    const reader = new FileReader();
+                    reader.onerror = reject;
+                    reader.readAsDataURL(compressedBlob); // 读取 Blob 为 Data URL
+                    reader.onload = () => {
+                      // 读取结果是 Data URL（格式："data:image/png;base64,xxx"），截取纯 Base64 部分
+                      const dataURL = reader.result as string;
+                      resolve(dataURL);
+                    };
+                  } catch (error) {
+                    console.log(error);
+                  }
+                });
+                // console.log(base64);
                 resolve({
                   size,
                   blob: compressedBlob,
                   url: URL.createObjectURL(compressedBlob),
+                  base64: base64,
                   actualSize: { width, height }, // 实际宽高可选
                 });
               },
@@ -79,7 +99,7 @@ export const useUploadStore = defineStore('upload', () => {
           });
         }),
       );
-
+      console.log('list', thumbnails);
       list[index].thumbnails = thumbnails;
       list[index].originalAspectRatio = (width / height).toFixed(2);
       list[index].status = 'completed';

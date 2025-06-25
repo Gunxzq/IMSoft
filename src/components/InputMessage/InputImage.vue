@@ -53,14 +53,16 @@ const handleDragLeave = (e: DragEvent) => {
 };
 // 处理文件选择
 const handleFileSelect = async (e: Event) => {
+  console.log('handleFileSelect');
   const input = e.target as HTMLInputElement;
+  console.log(input.files);
   if (input.files) {
     const validFiles = Array.from(input.files).filter(file => file.type.startsWith('image/'));
     uploadStore.addFiles(validFiles, 'Image');
     // 压缩图片
     uploadStore.startProcessing('Image', data => {
       console.log('开始压缩图片');
-      messageStore.sendMessage(userInfoStore.userId, messageStore.currentConversationId, data[0].url, MessageType.IMAGE);
+      messageStore.sendMessage(userInfoStore.userId, messageStore.currentConversationId, data[0].base64, MessageType.IMAGE);
     });
   }
 };
@@ -85,7 +87,7 @@ const handleDrop = async (e: DragEvent) => {
     // 压缩图片
     uploadStore.startProcessing('Image', data => {
       console.log('开始压缩图片', data);
-      messageStore.sendMessage(userInfoStore.userId, messageStore.currentConversationId, data[0].url, MessageType.IMAGE);
+      messageStore.sendMessage(userInfoStore.userId, messageStore.currentConversationId, data[0].base64, MessageType.IMAGE);
     });
   }
 };
