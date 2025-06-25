@@ -6,6 +6,7 @@ import { createVuetify } from 'vuetify';
 import 'vuetify/lib/styles/main.css';
 import '@mdi/font/css/materialdesignicons.css';
 import { marked } from 'marked';
+import globalMenu from './components/globalMenu.vue';
 
 const app = createApp(App);
 
@@ -36,6 +37,9 @@ marked.setOptions({
 });
 
 app.use(vuetify);
+
+// 注册全局组件
+app.component('globalMenu', globalMenu);
 
 // 挂载
 app.mount('#app');
