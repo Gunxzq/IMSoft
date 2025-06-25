@@ -5,9 +5,8 @@
       <!-- 文本内容（支持表情、@提及高亮） -->
       <!-- <div class="text-content" v-html="renderedContent"></div> -->
 
-      <div class="text-content">
-        <p>{{ message.content }}</p>
-      </div>
+      <div v-if="loading" class="text-content">加载中...</div>
+      <div v-else class="text-content" v-html="parsedHtml"></div>
       <!-- 时间戳 -->
       <span class="timestamp">
         {{ message.time }}
@@ -23,12 +22,37 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue';
 import type { MessageDetail } from './type';
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
+
+const parsedHtml = ref<string>('');
+const loading = ref<boolean>(true);
 
 // Props 定义
 const props = defineProps<{
   message: MessageDetail;
 }>();
+
+watch(
+  () => props.message.content,
+  async newContent => {
+    if (!newContent) return;
+
+    loading.value = true;
+    try {
+      const rawHtml = await marked.parse(newContent);
+      parsedHtml.value = DOMPurify.sanitize(rawHtml);
+    } catch (error) {
+      console.error('Markdown 解析失败:', error);
+      parsedHtml.value = `<p style="color:red;">解析失败: ${newContent}</p>`;
+    } finally {
+      loading.value = false;
+    }
+  },
+  { immediate: true },
+);
 
 // 导出方法
 defineExpose({});
@@ -41,22 +65,6 @@ defineExpose({});
   margin: 8px 0;
 }
 
-.self {
-  align-self: flex-end;
-  flex-direction: row-reverse;
-}
-
-.other {
-  align-self: flex-start;
-}
-
-.avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  margin: 0 8px;
-}
-
 .message-content {
   background: #fff;
   padding: 12px;
@@ -65,13 +73,10 @@ defineExpose({});
   position: relative;
 }
 
-.self .message-content {
-  background: #e1f5fe; /* 自己消息的背景色 */
-}
-
 .text-content {
-  white-space: pre-wrap; /* 保留换行 */
+  /* white-space: pre-wrap;  */
   word-break: break-word;
+  text-align: left;
 }
 
 .timestamp {
@@ -79,10 +84,5 @@ defineExpose({});
   color: #999;
   display: block;
   margin-top: 4px;
-}
-
-.at-mention {
-  color: #2196f3;
-  cursor: pointer;
 }
 </style>

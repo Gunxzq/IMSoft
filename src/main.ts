@@ -5,6 +5,7 @@ import Pinia from './store';
 import { createVuetify } from 'vuetify';
 import 'vuetify/lib/styles/main.css';
 import '@mdi/font/css/materialdesignicons.css';
+import { marked } from 'marked';
 
 const app = createApp(App);
 
@@ -26,6 +27,12 @@ const vuetify = createVuetify({
       },
     },
   },
+});
+
+marked.setOptions({
+  gfm: true, // 启用 GitHub 风格 Markdown
+  breaks: true, // 将换行符转换为 <br>（默认 false）
+  pedantic: false, // 不使用原始 markdown.pl（默认 false）
 });
 
 app.use(vuetify);
