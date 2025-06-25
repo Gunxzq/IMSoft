@@ -6,7 +6,12 @@
 
   <v-overlay v-model="overlay">
     <div class="image-uploader" @click="overlay = false">
-      <div class="upload-area" @dragover.prevent @drop.prevent="handleDrop" @click="triggerFileInput">
+      <div
+        class="upload-area"
+        @dragover.prevent="handleDragOver"
+        @drop.prevent="handleDrop"
+        @dragleave="handleDragLeave"
+        @click="triggerFileInput">
         <input ref="fileInput" type="file" accept="image/*" multiple @change="handleFileSelect" style="display: none" />
         <div v-if="files.length === 0" class="placeholder">拖拽图片至此或点击上传</div>
       </div>
@@ -37,6 +42,15 @@ let overlay = ref(false);
 let files = reactive<CompressedFile[]>([]);
 const fileInput = ref<HTMLInputElement | null>(null);
 
+const handleDragOver = (e: DragEvent) => {
+  e.preventDefault();
+  // console.log('handleDragOver', e.dataTransfer);
+};
+
+const handleDragLeave = (e: DragEvent) => {
+  e.preventDefault();
+  // console.log('handleDragLeave', e.dataTransfer);
+};
 // 处理文件选择
 const handleFileSelect = async (e: Event) => {
   const input = e.target as HTMLInputElement;
@@ -51,13 +65,27 @@ const handleFileSelect = async (e: Event) => {
   }
 };
 const handleDrop = async (e: DragEvent) => {
+  e.preventDefault(); // 阻止默认行为
+  // console.log('handleDrop', e.dataTransfer.files);
+
+  if (!e.dataTransfer) {
+    console.warn('dataTransfer is null or undefined');
+    return;
+  }
+  const { files } = e.dataTransfer;
+
+  if (!files || files.length === 0) {
+    console.warn('No files were dropped.');
+    return;
+  }
   if (e.dataTransfer?.files) {
     const validFiles = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith('image/'));
 
     uploadStore.addFiles(validFiles, 'Image');
     // 压缩图片
-    uploadStore.startProcessing('Image', () => {
-      console.log('开始压缩图片');
+    uploadStore.startProcessing('Image', data => {
+      console.log('开始压缩图片', data);
+      messageStore.sendMessage(userInfoStore.userId, messageStore.currentConversationId, data[0].url, MessageType.IMAGE);
     });
   }
 };
