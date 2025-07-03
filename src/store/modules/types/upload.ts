@@ -8,9 +8,11 @@ export interface UploadFile {
   status: 'pending' | 'processing' | 'completed' | 'failed';
 }
 
+// 缩略图
 export interface Thumbnail {
   size: { width: number; height: number };
   blob: Blob;
   url: string;
+  base64?: string;
   actualSize: { width: number; height: number };
 }

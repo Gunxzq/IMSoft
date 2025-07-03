@@ -6,7 +6,6 @@ import { formatTime, getAggregationKey, getGroupKey, getKey, isGroupId } from '.
 import { getAggregationStore, getUnreadCounts, getConversations } from '../../utils/localStorage';
 import { generateMessageId } from '../../utils/tool';
 import { useUserInfoStore } from './userInfo';
-import { id } from 'vuetify/locale';
 
 export const useMessageStore = defineStore('messages', () => {
   const { userId } = storeToRefs(useUserInfoStore());
@@ -185,6 +184,21 @@ export const useMessageStore = defineStore('messages', () => {
     }
   };
 
+  /**
+   * 删除消息
+   */
+  const deleteMessage = (messageId: string) => {
+    const Key = getKey([currentConversationId.value, userId.value]);
+    let messageList = conversationStore[Key].messages;
+    // 如果是末尾元素,更新聚合消息
+    if (messageId === aggregationStore[Key].lastMessage.id) {
+      aggregationStore[Key].lastMessage = messageList[messageList.length - 1];
+    }
+    // 删除消息
+    messageList = messageList.filter(message => message.id !== messageId);
+    conversationStore[Key].messages = messageList;
+  };
+
   // 暴露
-  return { sendMessage, currentAggregations, currentConversations, currentConversationId, currentMessage };
+  return { sendMessage, currentAggregations, currentConversations, currentConversationId, currentMessage, deleteMessage };
 });
