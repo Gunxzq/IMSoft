@@ -14,11 +14,25 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
     "esModuleInterop": true,
+    "typeRoots": [
+      "./node_modules/@types",
+      "./types.d.ts"
+    ],
+    "baseUrl": "./",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    }
   },
   "include": [
     "src/**/*.ts",
-    "src/**/*.tsx",
     "src/**/*.vue",
-    "src/**/*.d.ts"
+    "src/**/*.d.ts",
+    "types.d.ts",
   ],
+  "exclude": [
+    "node_modules",
+    "./src/**/*.md"
+  ]
 }
