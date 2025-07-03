@@ -4,3 +4,8 @@ declare module '*.vue' {
   const component: DefineComponent<{}, {}, any>;
   export default component;
 }
+
+declare module 'rollup-plugin-terser' {
+  import { Plugin } from 'rollup';
+  export function terser(options?: any): Plugin;
+}
