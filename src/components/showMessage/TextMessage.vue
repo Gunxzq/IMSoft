@@ -8,9 +8,9 @@
       <div v-if="loading" class="text-content">加载中...</div>
       <div v-else class="text-content" v-html="parsedHtml"></div>
       <!-- 时间戳 -->
-      <span class="timestamp">
+      <!-- <span class="timestamp">
         {{ message.time }}
-      </span>
+      </span> -->
     </div>
 
     <!-- 自己发送的消息状态 -->
@@ -56,6 +56,11 @@ watch(
 
 // 导出方法
 defineExpose({});
+</script>
+<script lang="ts">
+export default {
+  name: 'TextMessage',
+};
 </script>
 
 <style scoped>

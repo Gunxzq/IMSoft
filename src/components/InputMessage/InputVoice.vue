@@ -25,6 +25,12 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useMessageStore } from '../../store/modules/message';
+import { useUserInfoStore } from '../../store/modules/userInfo';
+import { MessageType } from '../../store/modules/types/message';
+import { blobToBase64 } from '../../utils/tool';
+const messageStore = useMessageStore();
+const userInfoStore = useUserInfoStore();
 // 录音相关状态
 let mediaRecorder = ref<MediaRecorder | null>(null); // 解析器
 let audioChunks = ref<Blob[]>([]); // 二进制数据
@@ -103,6 +109,7 @@ const initRecognizing = async () => {
         isRecognizing.value = true;
 
         recognition.onresult = (event: SpeechRecognitionEvent) => {
+          console.log('识别项');
           let tempInterim = '';
           let tempFinal = '';
 
@@ -120,10 +127,12 @@ const initRecognizing = async () => {
           // 更新状态
           interimResult.value = tempInterim;
           finalResult.value += tempFinal.trim();
+          console.log(finalResult.value);
         };
 
         // 错误处理
         recognition.onerror = (event: SpeechRecognitionEvent) => {
+          console.log(finalResult.value);
           isRecognizing.value = false;
           console.error('识别错误:', event.error);
         };
@@ -226,7 +235,7 @@ const stopRecord = () => {
 
     clearInterval(recordingTimer.value as number);
     mediaRecorder.value?.stop();
-    mediaRecorder.value?.stream.getTracks().forEach(track => track.stop());
+    mediaRecorder.value?.stream.getTracks().forEach((track: any) => track.stop());
     recognition?.stop();
   });
 };
@@ -234,14 +243,16 @@ const stopRecord = () => {
 const finishRecording = async () => {
   await stopRecord();
   // 如果没有录制内容，直接返回
-  if (!recordedAudioUrl.value) return;
+  if (!recordedAudioUrl.value || !audioBlob.value) return;
 
   try {
-    const content = `url=${recordedAudioUrl.value}$duration=${formatTime(recordingDuration.value)}`;
+    const base64 = await blobToBase64(audioBlob.value);
+    const content = `url==${base64}$duration==${recordingDuration.value}`;
     releaseAudioUrl();
     resetRecordingState();
     // 将数据传递给父组件
-    emit('recordComplete', content);
+    // emit('recordComplete', content);
+    messageStore.sendMessage(userInfoStore.userId, messageStore.currentConversationId, content, MessageType.VOICE);
   } catch (error) {
     console.error('发送音频失败:', error);
   } finally {
@@ -251,14 +262,14 @@ const finishRecording = async () => {
 // 转文字
 const convertToText = async () => {
   await stopRecord();
-  if (!recordedAudioUrl.value) return;
-
+  if (!finalResult.value) return;
   try {
     const content = finalResult.value;
     recordedAudioUrl.value = '';
     resetRecordingState();
     // 将数据传递给父组件
-    emit('convertToTextComplete', content);
+    // emit('convertToTextComplete', content);
+    messageStore.sendMessage(userInfoStore.userId, messageStore.currentConversationId, content, MessageType.TEXT);
   } catch (error) {
     console.error('发送音频失败:', error);
   } finally {
@@ -293,6 +304,7 @@ const releaseAudioUrl = () => {
 };
 // 清理资源
 const unmounted = () => {
+  console.log('卸载');
   if (mediaRecorder.value) {
     mediaRecorder.value.stream.getTracks().forEach(track => track.stop());
   }

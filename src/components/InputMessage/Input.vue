@@ -32,14 +32,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue';
-import moreActions from './moreActions.vue';
-import InputEmoj from './InputEmoj.vue';
-import InputVoice from './InputVoice.vue';
 import InputText from './InputText.vue';
 import { useMessageStore } from '../../store/modules/message';
 import { MessageType } from '../../store/modules/types/message';
 import { useUserInfoStore } from '../../store/modules/userInfo';
+import { ref, reactive, computed } from 'vue';
+
+// 异步加载非首屏资源
+import { defineAsyncComponent } from 'vue';
+const InputEmoj = defineAsyncComponent(() => import('./InputEmoj.vue'));
+const InputVoice = defineAsyncComponent(() => import('./InputVoice.vue'));
+const moreActions = defineAsyncComponent(() => import('./moreActions.vue'));
 
 const userInfoStore = useUserInfoStore();
 const messageStore = useMessageStore();
@@ -64,6 +67,13 @@ const sendState = computed(() => {
 
 const sendMsg = () => {
   messageStore.sendMessage(userInfoStore.userId, messageStore.currentConversationId, messageStore.currentMessage, MessageType.TEXT);
+  messageStore.currentMessage = '';
+};
+</script>
+
+<script lang="ts">
+export default {
+  name: 'InputMessage',
 };
 </script>
 

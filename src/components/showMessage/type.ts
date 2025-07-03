@@ -9,6 +9,14 @@ export interface MessageDetail {
   userId: string;
 }
 
+export interface ImageMessage extends MessageDetail {
+  imageUrl: string;
+  // 缩略图
+  previewUrl?: string;
+  downloadStatus: 'idle' | 'downloading' | 'downloaded' | 'failed';
+  progress?: number;
+}
+
 export interface FileMessage extends MessageDetail {
   fileName: string;
   fileSize: string;

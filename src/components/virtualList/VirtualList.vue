@@ -71,8 +71,8 @@ const calculateLayout = () => {
     // 初始化高度
     if (height === undefined) {
       // 项高度不等于距离顶部的高度
-      height = props.getItemHeight(item, index);
-      heightsCache.value.set(id, height);
+      height = props.getItemHeight(item, index) as number;
+      heightsCache.value.set(id, height as number);
     }
 
     total += height;
@@ -121,7 +121,8 @@ const calculateLayout = () => {
 
   //
   visibleItems.value = dataList.slice(start, end).map((item, idx) => ({
-    ...item,
+    id: item.id,
+    data: item,
     height: heightsCache.value.get(item.id)!,
     originalIndex: start + idx,
   }));
@@ -166,6 +167,12 @@ onMounted(() => {
   calculateLayout();
   emit('resize', { totalHeight: totalHeight.value, visibleCount: visibleItems.value.length });
 });
+</script>
+
+<script lang="ts">
+export default {
+  name: 'VirtualList',
+};
 </script>
 
 <style scoped>

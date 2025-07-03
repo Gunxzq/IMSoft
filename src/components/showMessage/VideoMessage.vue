@@ -50,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, watch } from 'vue';
 import type { MessageDetail, VideoMessage } from './type';
 import { parseMessageContent } from '../../utils/tool';
 // Props 定义
@@ -139,7 +139,7 @@ const onLoadedMetadata = () => {
 };
 
 // 错误处理
-const onError = e => {
+const onError = (e: any) => {
   console.log('onError', e);
   localPlayStatus.value = 'error';
   VideoDetail.value.playStatus = 'error';
@@ -169,6 +169,12 @@ const pauseAllOtherVideos = () => {
 //     }
 //   };
 // });
+</script>
+
+<script lang="ts">
+export default {
+  name: 'VideoMessage',
+};
 </script>
 
 <style scoped lang="scss">

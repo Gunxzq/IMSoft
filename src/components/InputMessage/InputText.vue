@@ -46,7 +46,7 @@ const isNewLine = (): Promise<boolean> => {
 
 // 获取行高
 const getLineHeight = (): Promise<number> => {
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     nextTick(() => {
       const textareaEl = textAreaRef.value?.$el?.querySelector('.v-textarea__sizer');
       if (textareaEl) {

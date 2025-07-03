@@ -1,13 +1,11 @@
 <template>
   <div class="chat-container" style="height: 800px; width: 600px">
-    <VirtualList :dataList="messages" :getItemHeight="getItemHeight" :buffer="200" @scroll="handleScroll">
+    <VirtualList :dataList="props.messages" :getItemHeight="getItemHeight" :buffer="200" @scroll="handleScroll">
       <!-- 自定义渲染插槽 -->
-      <template #default="{ item, index }">
-        <!-- <button @click.prevent="handleRightClick">nfdksdkj</button>
-        <button @click.prevent="globalMenuStore.showContextMenu = false">nfdksdkj</button> -->
-        <!-- {{ globalMenuStore.showContextMenu }} -->
+      <template #default="{ item }">
         <!-- 消息内容（根据类型动态渲染） -->
-        <component :is="getMessageComponent(item.type)" :message="item" @click.prevent.right.stop="handleRightClick" />
+        <!-- {{ item }} -->
+        <component :is="getMessageComponent(item.data.type)" :message="item.data" @click.prevent.right.stop="handleRightClick" />
         <!-- </div> -->
       </template>
     </VirtualList>
@@ -18,20 +16,19 @@
 import { ref } from 'vue';
 import VirtualList from '../virtualList/VirtualList.vue';
 import { MessageType } from '../../store/modules/types/message';
-import TextMessage from './TextMessage.vue';
-import ImageMessage from './ImageMessage.vue';
-import VoiceMessage from './VoiceMessage.vue';
-import VideoMessage from './VideoMessage.vue';
-import FileMessage from './FileMessage.vue';
-import LocationMessage from './LocationMessage.vue';
-import LinkMessage from './LinkMessage.vue';
-import { useGlobalMenuStore } from '../../store/modules/globalMenu';
 import type { ContextMenuItem } from '../../store/modules/types/globalMenu';
 import type { Message } from '../../store/modules/types/message';
+import { useGlobalMenuStore } from '../../store/modules/globalMenu';
+// 异步
+import { defineAsyncComponent } from 'vue';
+const TextMessage = defineAsyncComponent(() => import('./TextMessage.vue'));
+const ImageMessage = defineAsyncComponent(() => import('./ImageMessage.vue'));
+const FileMessage = defineAsyncComponent(() => import('./FileMessage.vue'));
+const VideoMessage = defineAsyncComponent(() => import('./VideoMessage.vue'));
+const VoiceMessage = defineAsyncComponent(() => import('./VoiceMessage.vue'));
+const LocationMessage = defineAsyncComponent(() => import('./LocationMessage.vue'));
+const LinkMessage = defineAsyncComponent(() => import('./LinkMessage.vue'));
 
-const klk = () => {
-  console.log('klk');
-};
 const globalMenuStore = useGlobalMenuStore();
 const props = defineProps({
   messages: { type: Array, required: true },

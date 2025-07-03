@@ -112,7 +112,11 @@ const handleFileClick = () => {
   }
 };
 </script>
-
+<script lang="ts">
+export default {
+  name: 'FileMessage',
+};
+</script>
 <style scoped lang="scss">
 .message-bubble {
   // 黑色圆角

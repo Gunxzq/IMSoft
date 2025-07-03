@@ -11,7 +11,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { computed } from 'vue';
 import InputImage from './InputImage.vue';
 
 let menuItems = [
@@ -84,7 +84,7 @@ let menuItems = [
   //   },
 ];
 
-const paginationLength = computed(() => Math.ceil(menuItems.length / 8));
+// const paginationLength = computed(() => Math.ceil(menuItems.length / 8));
 </script>
 
 <script lang="ts">
