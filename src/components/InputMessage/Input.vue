@@ -32,10 +32,11 @@
 <script setup lang="ts">
 import InputText from './InputText.vue';
 import { useUserInfoStore, useMessageStore } from '../../store';
-import { MessageType } from '../../store/modules/types/message';
-import { reactive, computed } from 'vue';
+import { MessageType } from '../../store/modules/types';
+import { reactive, computed, onMounted } from 'vue';
 // 异步加载非首屏资源
 import { defineAsyncComponent } from 'vue';
+import { eventEmitter, EventName } from '../../utils';
 const InputEmoj = defineAsyncComponent(() => import('./InputEmoj.vue'));
 const InputVoice = defineAsyncComponent(() => import('./InputVoice.vue'));
 const moreActions = defineAsyncComponent(() => import('./moreActions.vue'));
@@ -78,6 +79,17 @@ const sendMsg = () => {
   messageStore.sendMessage(userInfoStore.userId, messageStore.currentConversationId, messageStore.currentMessage, MessageType.TEXT);
   messageStore.currentMessage = '';
 };
+
+// 消息发送监听
+const watchMessage = () => {
+  eventEmitter.on(EventName.API_SEND_MESSAGE, (data: { content: string; type: MessageType }) => {
+    messageStore.sendMessage(userInfoStore.userId, messageStore.currentConversationId, data.content, data.type);
+  });
+};
+
+onMounted(() => {
+  watchMessage();
+});
 </script>
 
 <script lang="ts">

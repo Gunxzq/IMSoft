@@ -4,22 +4,16 @@
       <!-- 自定义渲染插槽 -->
       <template #default="{ item }">
         <!-- {{ item }} -->
-        <component
-          :is="getMessageComponent(item.data.type)"
-          :message="item.data"
-          @click.right.prevent.stop="handleRightClick(item, $event)" />
+        <component :is="getMessageComponent(item.data.type)" :message="item.data" />
       </template>
     </VirtualList>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
 import VirtualList from '../virtualList/VirtualList.vue';
-import { MessageType } from '../../store/modules/types/message';
-import type { ContextMenuItem } from '../../store/modules/types/globalMenu';
-import type { Message } from '../../store/modules/types/message';
-import { useGlobalMenuStore } from '../../store/modules/globalMenu';
+import { type Message, MessageType } from '../../store/modules/types/';
+
 // 异步
 import { defineAsyncComponent } from 'vue';
 const TextMessage = defineAsyncComponent(() => import('./TextMessage.vue'));
@@ -30,7 +24,6 @@ const VoiceMessage = defineAsyncComponent(() => import('./VoiceMessage.vue'));
 const LocationMessage = defineAsyncComponent(() => import('./LocationMessage.vue'));
 const LinkMessage = defineAsyncComponent(() => import('./LinkMessage.vue'));
 
-const globalMenuStore = useGlobalMenuStore();
 const props = defineProps({
   messages: { type: Array, required: true },
 });
@@ -89,52 +82,6 @@ const getMessageComponent = (type: MessageType) => {
   };
   return componentMap[type] || TextMessage;
 };
-
-// 右键菜单
-const handleRightClick = (item: any, e: MouseEvent) => {
-  e.preventDefault();
-  console.log('item', item);
-  try {
-    globalMenuStore.showMenu(e.clientX, e.clientY);
-
-    console.log('globalMenuStore', globalMenuStore.showContextMenu);
-  } catch (error) {
-    console.log('error', error);
-  }
-};
-
-const contextMenuItem = ref<ContextMenuItem[]>([
-  {
-    text: '菜单项1',
-    action: 'click',
-    callback: (context: any) => {
-      console.log('菜单项1', context);
-    },
-  },
-  {
-    text: '菜单项2',
-    action: 'click',
-    callback: (context: any) => {
-      console.log('菜单项2', context);
-    },
-  },
-  {
-    text: '菜单项3',
-    action: 'click',
-    callback: (context: any) => {
-      console.log('菜单项3', context);
-    },
-  },
-]);
-
-onMounted(() => {
-  globalMenuStore.initItem(contextMenuItem.value, {
-    isRight: true,
-    isLeft: false,
-    isMiddle: false,
-    isCtrl: false,
-  });
-});
 </script>
 
 <script lang="ts">

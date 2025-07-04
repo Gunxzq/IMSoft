@@ -1,7 +1,7 @@
 <template>
-  <div class="message-bubble" @click.right.prevent.stop="handleRightClick(props.message, $event)">
+  <div class="message-bubble">
     <!-- 消息内容 -->
-    <div class="message-content">
+    <div class="message-content" @click.right.prevent.stop="handleRightClick(props.message, $event)">
       <!-- 文本内容（支持表情、@提及高亮） -->
       <!-- <div class="text-content" v-html="renderedContent"></div> -->
 
@@ -22,28 +22,50 @@
 </template>
 
 <script setup lang="ts">
-import { useGlobalMenuStore, useMessageStore } from '../../store';
+import { CommonContentMenuItems, env, type contextEnv, EventName, eventEmitter } from '../../utils';
+import type { ContextMenuItem } from '../../store/modules/types';
 import { ref, watch } from 'vue';
 import type { MessageDetail } from './type';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
-import type { ContextMenuItem } from '../../store/modules/types';
-import eventEmitter, { EventName } from '../../utils/eventEmitter';
-
-interface contextEnv {
-  MessageStore: { currentMessage: string };
-  message: MessageDetail;
-}
 
 const parsedHtml = ref<string>('');
 const loading = ref<boolean>(true);
-const globalMenuStore = useGlobalMenuStore();
-const MessageStore = useMessageStore();
 
 // Props 定义
 const props = defineProps<{
   message: MessageDetail;
 }>();
+
+const contextMenuItem = ref<ContextMenuItem[]>([
+  {
+    text: '复制',
+    action: 'click',
+    callback: (context: contextEnv) => {
+      console.log(context.MessageStore.currentMessage);
+      context.MessageStore.currentMessage = context.message.content;
+      eventEmitter.emit(EventName.API_INPUT_UPDATE, context.message.content);
+    },
+  },
+  { text: '翻译', action: 'click', callback: () => {} },
+]);
+// 右键菜单
+const handleRightClick = (item: any, e: MouseEvent) => {
+  // 合并，初始化
+  env.GlobalMenuStore.initItem([...CommonContentMenuItems, ...contextMenuItem.value], {
+    ...env,
+    item,
+  });
+  e.preventDefault();
+  console.log('item', item);
+  try {
+    env.GlobalMenuStore.showMenu(e.clientX, e.clientY);
+
+    console.log('globalMenuStore', env.GlobalMenuStore.showContextMenu);
+  } catch (error) {
+    console.log('error', error);
+  }
+};
 
 watch(
   () => props.message.content,
@@ -63,48 +85,6 @@ watch(
   },
   { immediate: true },
 );
-
-const contextMenuItem = ref<ContextMenuItem[]>([
-  {
-    text: '复制',
-    action: 'click',
-    callback: (context: contextEnv) => {
-      console.log(context.MessageStore.currentMessage);
-      context.MessageStore.currentMessage = context.message.content;
-      eventEmitter.emit(EventName.API_INPUT_UPDATE, context.message.content);
-    },
-  },
-  {
-    text: '菜单项2',
-    action: 'click',
-    callback: (context: any) => {
-      console.log('菜单项2', context);
-    },
-  },
-  {
-    text: '菜单项3',
-    action: 'click',
-    callback: (context: any) => {
-      console.log('菜单项3', context);
-    },
-  },
-]);
-// 右键菜单
-const handleRightClick = (item: any, e: MouseEvent) => {
-  globalMenuStore.initItem(contextMenuItem.value, {
-    MessageStore,
-    message: props.message,
-  });
-  e.preventDefault();
-  console.log('item', item);
-  try {
-    globalMenuStore.showMenu(e.clientX, e.clientY);
-
-    console.log('globalMenuStore', globalMenuStore.showContextMenu);
-  } catch (error) {
-    console.log('error', error);
-  }
-};
 </script>
 <script lang="ts">
 export default {
