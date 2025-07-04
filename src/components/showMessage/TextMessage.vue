@@ -1,5 +1,5 @@
 <template>
-  <div class="message-bubble">
+  <div class="message-bubble" @click.right.prevent.stop="handleRightClick(props.message, $event)">
     <!-- 消息内容 -->
     <div class="message-content">
       <!-- 文本内容（支持表情、@提及高亮） -->
@@ -22,13 +22,23 @@
 </template>
 
 <script setup lang="ts">
+import { useGlobalMenuStore, useMessageStore } from '../../store';
 import { ref, watch } from 'vue';
 import type { MessageDetail } from './type';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
+import type { ContextMenuItem } from '../../store/modules/types';
+import eventEmitter, { EventName } from '../../utils/eventEmitter';
+
+interface contextEnv {
+  MessageStore: { currentMessage: string };
+  message: MessageDetail;
+}
 
 const parsedHtml = ref<string>('');
 const loading = ref<boolean>(true);
+const globalMenuStore = useGlobalMenuStore();
+const MessageStore = useMessageStore();
 
 // Props 定义
 const props = defineProps<{
@@ -54,8 +64,47 @@ watch(
   { immediate: true },
 );
 
-// 导出方法
-defineExpose({});
+const contextMenuItem = ref<ContextMenuItem[]>([
+  {
+    text: '复制',
+    action: 'click',
+    callback: (context: contextEnv) => {
+      console.log(context.MessageStore.currentMessage);
+      context.MessageStore.currentMessage = context.message.content;
+      eventEmitter.emit(EventName.API_INPUT_UPDATE, context.message.content);
+    },
+  },
+  {
+    text: '菜单项2',
+    action: 'click',
+    callback: (context: any) => {
+      console.log('菜单项2', context);
+    },
+  },
+  {
+    text: '菜单项3',
+    action: 'click',
+    callback: (context: any) => {
+      console.log('菜单项3', context);
+    },
+  },
+]);
+// 右键菜单
+const handleRightClick = (item: any, e: MouseEvent) => {
+  globalMenuStore.initItem(contextMenuItem.value, {
+    MessageStore,
+    message: props.message,
+  });
+  e.preventDefault();
+  console.log('item', item);
+  try {
+    globalMenuStore.showMenu(e.clientX, e.clientY);
+
+    console.log('globalMenuStore', globalMenuStore.showContextMenu);
+  } catch (error) {
+    console.log('error', error);
+  }
+};
 </script>
 <script lang="ts">
 export default {
@@ -64,12 +113,6 @@ export default {
 </script>
 
 <style scoped>
-.message-bubble {
-  display: flex;
-  max-width: 70%;
-  margin: 8px 0;
-}
-
 .message-content {
   background: #fff;
   padding: 12px;

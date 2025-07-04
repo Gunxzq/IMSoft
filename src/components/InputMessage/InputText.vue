@@ -7,15 +7,18 @@
     maxlength="4500"
     max-rows="6"
     auto-grow
+    autofocus
     @input="onTextareaInput"></v-textarea>
 </template>
 
 <script setup lang="ts">
 import * as lodash from 'lodash-es';
-import { nextTick, onMounted, ref, type Ref } from 'vue';
-import { useMessageStore } from '../../store/modules/message';
-const messageStore = useMessageStore();
+import { nextTick, onMounted, ref, watch, type Ref } from 'vue';
+import { useMessageStore } from '../../store';
+import { text } from 'stream/consumers';
+import eventEmitter, { EventName } from '../../utils/eventEmitter';
 
+const messageStore = useMessageStore();
 let textAreaRef = ref<null | Ref>(null);
 // 行高
 let lineHeight = ref(0);
@@ -29,6 +32,22 @@ const onTextareaInput = lodash.debounce(async e => {
   let isNewLineState = await isNewLine();
   emit('rowsChange', isNewLineState);
 }, 500);
+
+// 监听消息更新
+const watchMessage = () => {
+  console.log('watchMessage');
+  eventEmitter.on(EventName.API_INPUT_UPDATE, (content: any) => {
+    console.log('watchMessage', content);
+    nextTick(() => {
+      let dom = textAreaRef.value?.$el.querySelector('textarea');
+      dom.focus();
+      dom.value = content;
+      // 手动触发 input 事件（Vuetify 会监听此事件来更新 UI）
+      const inputEvent = new Event('input', { bubbles: true, cancelable: true });
+      dom.dispatchEvent(inputEvent);
+    });
+  });
+};
 
 // 判断是否换行
 const isNewLine = (): Promise<boolean> => {
@@ -62,6 +81,7 @@ const getLineHeight = (): Promise<number> => {
 
 onMounted(async () => {
   lineHeight.value = await getLineHeight();
+  watchMessage();
 });
 </script>
 

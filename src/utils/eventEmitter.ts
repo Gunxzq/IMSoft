@@ -6,6 +6,8 @@ export enum EventName {
   API_VALIDATE_ERROR = 'API:VALIDATE_ERROR',
   // 登录事件
   API_LOGIN = 'API:LOGIN',
+  // 输入更新
+  API_INPUT_UPDATE = 'API:INPUT_UPDATE',
 }
 
 class EventEmitter {
@@ -15,6 +17,7 @@ class EventEmitter {
       [EventName.API_UN_AUTH]: new Set(),
       [EventName.API_VALIDATE_ERROR]: new Set(),
       [EventName.API_LOGIN]: new Set(),
+      [EventName.API_INPUT_UPDATE]: new Set(),
     };
   }
   //监听事件
