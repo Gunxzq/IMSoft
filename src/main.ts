@@ -1,5 +1,5 @@
 import { createApp } from 'vue';
-import './style.css';
+import './styles.scss';
 import App from './App.vue';
 import Pinia from './store';
 import { createVuetify } from 'vuetify';
@@ -9,7 +9,6 @@ import { marked } from 'marked';
 import globalMenu from './components/globalMenu.vue';
 
 const app = createApp(App);
-
 app.use(Pinia);
 
 const vuetify = createVuetify({

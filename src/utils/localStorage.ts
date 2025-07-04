@@ -7,8 +7,7 @@ import type {
   customGroupsStore,
   userObjectStatus,
   contactsStore,
-  // groupObjectStatus,
-} from '../store/modules/types/store';
+} from '@/store/modules/types';
 
 export const LOCAL_STORAGE_KEYS = {
   CONVERSATIONS: 'conversations',

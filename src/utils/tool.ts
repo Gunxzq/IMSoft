@@ -57,7 +57,7 @@ export function parseMessageContent(content: string) {
 
     // console.log('fieldStr', fieldStr);
     // 分割键值对（按 : 分割，最多分割为两部分，避免值中包含 :）
-    const [key, value] = fieldStr.split('=', 2);
+    const [key, value] = fieldStr.split('==', 2);
 
     // 过滤无效键值对（键或值为空）
     if (key && value !== undefined) {
@@ -104,4 +104,14 @@ export function dateToTimestamp(date: Date): number {
 
 export function generateMessageId(): string {
   return `${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+}
+
+// blob转base64
+export function blobToBase64(blob: Blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as String); // 去掉 data URL 的前缀
+    reader.onerror = error => reject(error);
+    reader.readAsDataURL(blob);
+  });
 }

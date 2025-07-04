@@ -22,12 +22,12 @@
 <script setup lang="ts">
 import { onBeforeUnmount, ref, reactive } from 'vue';
 import type { CompressedFile } from './type';
-import { useUploadStore, useUserInfoStore, useMessageStore } from '../../store';
+import { useUploadStore } from '../../store';
 import { MessageType } from '../../store/modules/types/message';
+import { eventEmitter, EventName } from '../../utils/eventEmitter';
 
-const userInfoStore = useUserInfoStore();
 const uploadStore = useUploadStore();
-const messageStore = useMessageStore();
+
 // 事件
 const emit = defineEmits(['change', 'remove', 'upload']);
 
@@ -60,7 +60,8 @@ const handleFileSelect = async (e: Event) => {
     // 压缩图片
     uploadStore.startProcessing('Image', data => {
       console.log('开始压缩图片');
-      messageStore.sendMessage(userInfoStore.userId, messageStore.currentConversationId, data[0].base64, MessageType.IMAGE);
+
+      eventEmitter.emit(EventName.API_SEND_MESSAGE, { content: data[0].base64, type: MessageType.IMAGE });
     });
   }
 };
@@ -85,7 +86,7 @@ const handleDrop = async (e: DragEvent) => {
     // 压缩图片
     uploadStore.startProcessing('Image', data => {
       console.log('开始压缩图片', data);
-      messageStore.sendMessage(userInfoStore.userId, messageStore.currentConversationId, data[0].base64, MessageType.IMAGE);
+      eventEmitter.emit(EventName.API_SEND_MESSAGE, { content: data[0].base64, type: MessageType.IMAGE });
     });
   }
 };

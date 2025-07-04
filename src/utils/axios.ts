@@ -1,6 +1,7 @@
 import axios from 'axios';
-import { useUserInfoStore } from '../store/modules/userInfo';
-import eventEmitter from './eventEmitter';
+
+import { useUserInfoStore } from '../store';
+import { eventEmitter } from './eventEmitter';
 // 创建axios实例
 const request = axios.create({
   baseURL: import.meta.env.VITE_APP_BASE_URL,
@@ -26,6 +27,7 @@ request.interceptors.response.use(
         message = 'token过期';
         // 触发无权限事件
         eventEmitter.emit('API:UN_AUTH');
+        console.log('token过期', message);
         break;
       case 403:
         message = '无权访问';

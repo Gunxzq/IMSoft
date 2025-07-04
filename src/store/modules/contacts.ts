@@ -1,11 +1,9 @@
 import { defineStore, storeToRefs } from 'pinia';
 import { ref, computed, reactive } from 'vue';
-import type { customGroupsStore, GroupInfoStore } from './types/store';
+import type { customGroupsStore, GroupInfoStore } from './types';
 import { getCustomGroups, getContactsIds } from '../../utils/localStorage';
 import { getFirstLetter } from '../../utils/tool';
-import { useUserInfoStore } from './userInfo';
-import { useUsersStore } from './users';
-import { useGroupStore } from './groups';
+import { useUserInfoStore, useUsersStore, useGroupStore } from '../index';
 
 export const useContactsStore = defineStore('contacts', () => {
   // const instance = getCurrentInstance();
@@ -17,10 +15,10 @@ export const useContactsStore = defineStore('contacts', () => {
   let activeTab = ref('contacts');
 
   //   新朋友申请列表
-  let newFriends = reactive([]);
+  // let newFriends = reactive([]);
 
   //   群通知
-  let groupNotices = reactive([]);
+  // let groupNotices = reactive([]);
 
   let contacts = reactive(getContactsIds(userId.value));
 
@@ -66,7 +64,7 @@ export const useContactsStore = defineStore('contacts', () => {
     // 分组
     let orderedKeys: Set<string> = new Set([]);
 
-    Object.values(groups.value as GroupInfoStore).forEach(item => {
+    Object.values(groups.value as GroupInfoStore).forEach((item: any) => {
       let key: string = item.type;
 
       if (!orderedKeys.has(key)) {

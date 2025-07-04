@@ -13,10 +13,9 @@
 
 <script setup lang="ts">
 import * as lodash from 'lodash-es';
-import { nextTick, onMounted, ref, watch, type Ref } from 'vue';
+import { nextTick, onMounted, ref, type Ref } from 'vue';
 import { useMessageStore } from '../../store';
-import { text } from 'stream/consumers';
-import eventEmitter, { EventName } from '../../utils/eventEmitter';
+import { EventName, eventEmitter } from '../../utils';
 
 const messageStore = useMessageStore();
 let textAreaRef = ref<null | Ref>(null);

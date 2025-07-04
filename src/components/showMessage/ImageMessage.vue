@@ -24,6 +24,8 @@ const contextMenuItem = ref<ContextMenuItem[]>([
     callback: (context: contextEnv) => {
       const base64Data = context.message.content; // 假设 props.message.content 是 Base64 数据
       saveBase64AsImage(base64Data, 'image.png'); //
+      eventEmitter;
+      EventName;
     },
   },
 ]);

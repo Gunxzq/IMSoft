@@ -4,12 +4,7 @@ module.exports = {
     es2021: true,
     node: true,
   },
-  extends: [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:vue/vue3-essential',
-    'prettier',
-  ],
+  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'plugin:vue/vue3-essential', 'prettier'],
   overrides: [],
   parser: '@typescript-eslint/parser',
   // parser: 'babel-eslint',
@@ -19,6 +14,7 @@ module.exports = {
   },
   plugins: ['html', '@typescript-eslint', 'vue', 'prettier'],
   rules: {
+    '@typescript-eslint/no-unused-vars': ['warn'],
     'prettier/prettiew': 'error',
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
     semi: [2, 'always'], // 语句强制分号结尾

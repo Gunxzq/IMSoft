@@ -30,6 +30,7 @@
     "src/**/*.vue",
     "src/**/*.d.ts",
     "types.d.ts",
+    "@mdi/svg"
   ],
   "exclude": [
     "node_modules",

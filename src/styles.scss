@@ -77,3 +77,48 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition: all 0.3s ease;
+  // position: absolute;
+  width: 100%;
+}
+/* 进入动画：从下方滑入 */
+.slide-up-enter-from {
+  transform: translateY(100%); /* 初始位置：完全隐藏在下方 */
+  opacity: 0; /* 可选：淡入效果 */
+}
+
+.slide-up-enter-to {
+  transform: translateY(0); /* 最终位置：正常显示 */
+  opacity: 1;
+}
+
+/* 离开动画：向下滑出 */
+.slide-up-leave-from {
+  transform: translateY(0); /* 初始位置：正常显示 */
+  opacity: 1;
+}
+
+.slide-up-leave-to {
+  transform: translateY(100%); /* 最终位置：完全隐藏在下方 */
+  opacity: 0;
+}
+
+.message-bubble {
+  // 黑色圆角
+  border-radius: 8px;
+  // background-color: #f5f5f5;
+  display: flex;
+  width: 70%;
+  // height: 100%;
+  margin: 8px 0;
+  padding: 10px;
+}

@@ -26,8 +26,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { MessageType } from '../../store/modules/types/message';
-import { blobToBase64 } from '../../utils/tool';
-import eventEmitter, { EventName } from '../..//utils/eventEmitter';
+import { eventEmitter, EventName, blobToBase64 } from '../../utils';
 
 // 录音相关状态
 let mediaRecorder = ref<MediaRecorder | null>(null); // 解析器

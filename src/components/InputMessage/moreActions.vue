@@ -11,7 +11,6 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed } from 'vue';
 import InputImage from './InputImage.vue';
 
 let menuItems = [

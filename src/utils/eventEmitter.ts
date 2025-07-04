@@ -8,6 +8,8 @@ export enum EventName {
   API_LOGIN = 'API:LOGIN',
   // 输入更新
   API_INPUT_UPDATE = 'API:INPUT_UPDATE',
+  // 发送消息
+  API_SEND_MESSAGE = 'API:SEND_MESSAGE',
 }
 
 class EventEmitter {
@@ -18,6 +20,7 @@ class EventEmitter {
       [EventName.API_VALIDATE_ERROR]: new Set(),
       [EventName.API_LOGIN]: new Set(),
       [EventName.API_INPUT_UPDATE]: new Set(),
+      [EventName.API_SEND_MESSAGE]: new Set(),
     };
   }
   //监听事件
@@ -42,4 +45,4 @@ class EventEmitter {
   }
 }
 
-export default new EventEmitter();
+export const eventEmitter = new EventEmitter();

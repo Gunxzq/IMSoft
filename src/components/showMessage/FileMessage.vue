@@ -31,7 +31,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import type { MessageDetail, FileMessage } from './type';
-import { parseMessageContent } from '../../utils/tool';
+import { parseMessageContent } from '../../utils';
 // Props 定义
 const props = defineProps<{ message: MessageDetail }>();
 
@@ -117,18 +117,7 @@ export default {
   name: 'FileMessage',
 };
 </script>
-<style scoped lang="scss">
-.message-bubble {
-  // 黑色圆角
-  border-radius: 8px;
-  background-color: #f5f5f5;
-  display: flex;
-  width: 70%;
-  height: 100%;
-  margin: 8px 0;
-  padding: 10px;
-}
-
+<style lang="scss">
 // 文件类型图标
 .file-icon {
   width: 30%;

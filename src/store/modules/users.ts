@@ -1,8 +1,7 @@
 import { defineStore, storeToRefs } from 'pinia';
 import { reactive } from 'vue';
-import type { UserInfoStore, userObjectStatus } from './types/store';
+import type { UserInfoStore, userObjectStatus, userStatusInfo } from './types';
 import { getUserInfoStore, getUserStatusStore } from '../../utils/localStorage';
-import type { userStatusInfo } from './types/userInfo';
 import { useUserInfoStore } from './userInfo';
 
 export const useUsersStore = defineStore('users', () => {
@@ -22,6 +21,7 @@ export const useUsersStore = defineStore('users', () => {
     let oldUserStatusInfo = userStatus[userId];
     // 更新信息
     oldUserStatusInfo = newUserStatusInfo;
+    console.log('更新用户状态信息', userId, oldUserStatusInfo);
   };
   /**
    * 获取某个用户状态信息

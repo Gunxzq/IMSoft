@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import type { MessageDetail } from './type';
+// import type { MessageDetail } from './type';
 
 // Props 定义
 // const props = defineProps<{
@@ -19,10 +19,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.message-bubble {
-  display: flex;
-  max-width: 70%;
-  margin: 8px 0;
-}
-</style>
+<style scoped></style>

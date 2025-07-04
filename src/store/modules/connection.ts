@@ -1,8 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import WebSocketServiceIstance from '../../utils/websockets/websokcet';
-
-import type { ConnectionState } from './types/connections';
+import type { ConnectionState } from './types';
 
 export const useConnectionStore = defineStore('connection', () => {
   // 连接状态
@@ -45,7 +44,7 @@ export const useConnectionStore = defineStore('connection', () => {
 
   return {
     state,
-    wsService,
+    // wsService,
     connect,
     disconnect,
   };

@@ -1,19 +1,19 @@
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import { io } from 'socket.io-client';
 
 const useVideo = () => {
-  const join = () => {
-    socket.emit('join-room', {
-      roomId: 'room1',
-      userId: new Date().getTime().toString(),
-    });
-  };
+  // const join = () => {
+  //   socket.emit('join-room', {
+  //     roomId: 'room1',
+  //     userId: new Date().getTime().toString(),
+  //   });
+  // };
 
-  const localVideo = ref<HTMLVideoElement>();
+  // const localVideo = ref<HTMLVideoElement>();
   const remoteVideo = ref<HTMLVideoElement>();
   const socket = io('http://localhost:3000');
   // 媒体流对象(包含摄像头、麦克风)
-  const localStream = ref<MediaStream>();
+  // const localStream = ref<MediaStream>();
   const peerConnection = new RTCPeerConnection();
 
   // 处理 ICE 候选
@@ -71,31 +71,31 @@ const useVideo = () => {
     });
   }
 
-  // 开始通话
-  async function startCall() {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true,
-      });
-      localStream.value = stream;
-      // 媒体标签
-      localVideo.value!.srcObject = stream;
-      // 将视频轨道添加到 WebRTC 连接
-      peerConnection.addTrack(stream.getTracks()[0], stream);
-    } catch (error) {
-      console.log('无法访问媒体设备', error);
-    }
-  }
+  //   // 开始通话
+  //   async function startCall() {
+  //     try {
+  //       const stream = await navigator.mediaDevices.getUserMedia({
+  //         video: true,
+  //         audio: true,
+  //       });
+  //       localStream.value = stream;
+  //       // 媒体标签
+  //       localVideo.value!.srcObject = stream;
+  //       // 将视频轨道添加到 WebRTC 连接
+  //       peerConnection.addTrack(stream.getTracks()[0], stream);
+  //     } catch (error) {
+  //       console.log('无法访问媒体设备', error);
+  //     }
+  //   }
 
-  // 结束通话
-  function endCall() {
-    peerConnection.close();
-    // getTracks返回所有轨道的数组(音频、视频轨道)
-    // track.stop停止每个轨道的采集
-    localStream.value?.getTracks().forEach(track => track.stop());
-    if (localVideo.value) localVideo.value.srcObject = null;
-  }
+  //   // 结束通话
+  //   function endCall() {
+  //     peerConnection.close();
+  //     // getTracks返回所有轨道的数组(音频、视频轨道)
+  //     // track.stop停止每个轨道的采集
+  //     localStream.value?.getTracks().forEach(track => track.stop());
+  //     if (localVideo.value) localVideo.value.srcObject = null;
+  //   }
 };
 
 export default useVideo;

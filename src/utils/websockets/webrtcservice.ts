@@ -1,4 +1,4 @@
-import { ref, useAttrs } from 'vue';
+import { ref } from 'vue';
 import WebSocketServiceIstance from './websokcet';
 
 export class WebRTCService {
@@ -7,7 +7,7 @@ export class WebRTCService {
   //本地流
   private localStream = ref<MediaStream | null>(null);
   // 远程流,可能是多个
-  private remoteStream = ref<MediaStream[] | null>(null);
+  // private remoteStream = ref<MediaStream[] | null>(null);
   constructor() {
     this.peerConnection = new RTCPeerConnection();
     this.initLocalStream();

@@ -2,16 +2,30 @@ import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import path from 'path';
 import vuetify from 'vite-plugin-vuetify';
+// import Icons from 'unplugin-icons/vite';
+// import IconsResolver from 'unplugin-icons/resolver';
+// import Components from 'unplugin-vue-components/vite';
 export default defineConfig((env: any) => {
-  // const env = loadEnv(mode, process.cwd());
   const mode = env.mode;
-  // const command = env.command;
+
   return {
     alias: {
-      '@': path.resolve(__dirname, '.src'),
+      '@': path.resolve(__dirname, 'src'),
     },
     plugins: [
       vue(),
+      // Components({
+      //   resolvers: [
+      //     // 自动注册图标组件
+      //     IconsResolver({
+      //       enabledCollections: ['mdi'],
+      //     }),
+      //   ],
+      // }),
+      // Icons({
+      //   // 自动安装图标库
+      //   autoInstall: true,
+      // }),
       vuetify({
         autoImport: true,
         styles: true,
@@ -22,15 +36,18 @@ export default defineConfig((env: any) => {
     },
 
     optimizedDependencies: {
-      csscodesplit: true,
       entries: ['src/main.ts'],
       include: ['vue', 'vue-router', 'pinia', 'vuetify'],
     },
     build: {
+      cssCodeSplit: true,
       outDir: 'dist',
       SourceMap: true,
       minify: mode == 'development' ? false : 'terser',
-      // minify: 'terser',
+      // 资源指纹
+      assetsInlineLimit: 4096,
+      assetsDir: 'assets',
+      // 压缩
       terserOptions: {
         compress: {
           // 移除console
@@ -46,9 +63,13 @@ export default defineConfig((env: any) => {
       rollupOptions: {
         output: {
           // 设置缓存头
+          // 手动分块
           manualChunks(id: any) {
             if (id.includes('node_modules')) {
               return 'vendor';
+            }
+            if (id.includes('vuetify')) {
+              return 'vuetify';
             }
           },
         },
