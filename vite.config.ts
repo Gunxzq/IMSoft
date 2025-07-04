@@ -33,13 +33,21 @@ export default defineConfig((env: any) => {
     ],
     server: {
       port: 5173,
+      proxy: {
+        '/api': {
+          target: 'http://localhost:8080',
+          changeOrigin: true,
+          rewrite: path => path.replace(/^\/api/, ''),
+        },
+      },
     },
 
     optimizedDependencies: {
       entries: ['src/main.ts'],
       include: ['vue', 'vue-router', 'pinia', 'vuetify'],
     },
-    base: '/',
+    // GITHUB用
+    base: '/IMSoft/',
     build: {
       cssCodeSplit: true,
       outDir: 'dist',
