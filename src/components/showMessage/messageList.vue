@@ -3,17 +3,18 @@
     <VirtualList :dataList="props.messages" :getItemHeight="getItemHeight" :buffer="200" @scroll="handleScroll">
       <!-- 自定义渲染插槽 -->
       <template #default="{ item }">
-        <!-- 消息内容（根据类型动态渲染） -->
         <!-- {{ item }} -->
-        <component :is="getMessageComponent(item.data.type)" :message="item.data" @click.prevent.right.stop="handleRightClick" />
-        <!-- </div> -->
+        <component
+          :is="getMessageComponent(item.data.type)"
+          :message="item.data"
+          @click.right.prevent.stop="handleRightClick(item, $event)" />
       </template>
     </VirtualList>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import VirtualList from '../virtualList/VirtualList.vue';
 import { MessageType } from '../../store/modules/types/message';
 import type { ContextMenuItem } from '../../store/modules/types/globalMenu';
@@ -90,19 +91,11 @@ const getMessageComponent = (type: MessageType) => {
 };
 
 // 右键菜单
-const handleRightClick = (e: MouseEvent) => {
+const handleRightClick = (item: any, e: MouseEvent) => {
   e.preventDefault();
-  console.log('handleRightClick', e);
-
-  console.log('contextMenuItem', contextMenuItem.value);
-  console.log('contextMenu', globalMenuStore.showMenu);
+  console.log('item', item);
   try {
-    globalMenuStore.showMenu(e.clientX, e.clientY, contextMenuItem.value, {
-      isRight: true,
-      isLeft: false,
-      isMiddle: false,
-      isCtrl: false,
-    });
+    globalMenuStore.showMenu(e.clientX, e.clientY);
 
     console.log('globalMenuStore', globalMenuStore.showContextMenu);
   } catch (error) {
@@ -133,6 +126,15 @@ const contextMenuItem = ref<ContextMenuItem[]>([
     },
   },
 ]);
+
+onMounted(() => {
+  globalMenuStore.initItem(contextMenuItem.value, {
+    isRight: true,
+    isLeft: false,
+    isMiddle: false,
+    isCtrl: false,
+  });
+});
 </script>
 
 <script lang="ts">

@@ -11,7 +11,7 @@
         @dragover.prevent="handleDragOver"
         @drop.prevent="handleDrop"
         @dragleave="handleDragLeave"
-        @click="triggerFileInput">
+        @click.stop="triggerFileInput">
         <input ref="fileInput" type="file" accept="image/*" multiple @change="handleFileSelect" style="display: none" />
         <div v-if="files.length === 0" class="placeholder">拖拽图片至此或点击上传</div>
       </div>
@@ -22,9 +22,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, ref, reactive } from 'vue';
 import type { CompressedFile } from './type';
-import { useUploadStore } from '../../store/modules/upload';
-import { useUserInfoStore } from '../../store/modules/userInfo';
-import { useMessageStore } from '../../store/modules/message';
+import { useUploadStore, useUserInfoStore, useMessageStore } from '../../store';
 import { MessageType } from '../../store/modules/types/message';
 
 const userInfoStore = useUserInfoStore();
@@ -94,7 +92,12 @@ const handleDrop = async (e: DragEvent) => {
 
 // 触发文件选择
 const triggerFileInput = () => {
-  fileInput.value?.click();
+  try {
+    fileInput.value?.click();
+    console.log('触发文件选择');
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 onBeforeUnmount(() => {
