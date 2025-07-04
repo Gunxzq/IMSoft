@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <v-btn @click="startRecord" style="width: 100%">{{ recordText }}</v-btn>
+    <v-btn @click="startRecord" style="width: 100%" v-if="recordingStatus == 'inactive'">{{ recordText }}</v-btn>
     <!-- 录音控制面板（录音时显示） -->
     <transition name="slide-up">
       <div v-show="recordingStatus === 'recording'">
@@ -25,12 +25,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useMessageStore } from '../../store/modules/message';
-import { useUserInfoStore } from '../../store/modules/userInfo';
 import { MessageType } from '../../store/modules/types/message';
 import { blobToBase64 } from '../../utils/tool';
-const messageStore = useMessageStore();
-const userInfoStore = useUserInfoStore();
+import eventEmitter, { EventName } from '../..//utils/eventEmitter';
+
 // 录音相关状态
 let mediaRecorder = ref<MediaRecorder | null>(null); // 解析器
 let audioChunks = ref<Blob[]>([]); // 二进制数据
@@ -109,7 +107,6 @@ const initRecognizing = async () => {
         isRecognizing.value = true;
 
         recognition.onresult = (event: SpeechRecognitionEvent) => {
-          console.log('识别项');
           let tempInterim = '';
           let tempFinal = '';
 
@@ -127,7 +124,7 @@ const initRecognizing = async () => {
           // 更新状态
           interimResult.value = tempInterim;
           finalResult.value += tempFinal.trim();
-          console.log(finalResult.value);
+          console.log('识别项', finalResult.value);
         };
 
         // 错误处理
@@ -250,9 +247,10 @@ const finishRecording = async () => {
     const content = `url==${base64}$duration==${recordingDuration.value}`;
     releaseAudioUrl();
     resetRecordingState();
-    // 将数据传递给父组件
-    // emit('recordComplete', content);
-    messageStore.sendMessage(userInfoStore.userId, messageStore.currentConversationId, content, MessageType.VOICE);
+    eventEmitter.emit(EventName.API_SEND_MESSAGE, {
+      content,
+      type: MessageType.VOICE,
+    });
   } catch (error) {
     console.error('发送音频失败:', error);
   } finally {
@@ -262,14 +260,22 @@ const finishRecording = async () => {
 // 转文字
 const convertToText = async () => {
   await stopRecord();
-  if (!finalResult.value) return;
+  // 录音时间短，无法识别
+  if (!finalResult.value || finalResult.value.length <= 0) {
+    recordedAudioUrl.value = '';
+    resetRecordingState();
+    return;
+  }
   try {
+    console.log('开始转文字');
     const content = finalResult.value;
     recordedAudioUrl.value = '';
     resetRecordingState();
-    // 将数据传递给父组件
-    // emit('convertToTextComplete', content);
-    messageStore.sendMessage(userInfoStore.userId, messageStore.currentConversationId, content, MessageType.TEXT);
+    console.log('发送文字:', content);
+    eventEmitter.emit(EventName.API_SEND_MESSAGE, {
+      content,
+      type: MessageType.TEXT,
+    });
   } catch (error) {
     console.error('发送音频失败:', error);
   } finally {
