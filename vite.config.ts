@@ -39,6 +39,7 @@ export default defineConfig((env: any) => {
       entries: ['src/main.ts'],
       include: ['vue', 'vue-router', 'pinia', 'vuetify'],
     },
+    base: '/',
     build: {
       cssCodeSplit: true,
       outDir: 'dist',
